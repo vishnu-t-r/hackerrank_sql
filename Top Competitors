@@ -1,0 +1,38 @@
+https://www.hackerrank.com/challenges/full-score/problem?isFullScreen=false
+
+??Question
+Julia just finished conducting a coding contest, and she needs your help assembling the leaderboard! 
+Write a query to print the respective hacker_id and name of hackers who achieved full scores for more than one challenge. 
+Order your output in descending order by the total number of challenges in which the hacker earned a full score. 
+If more than one hacker received full scores in same number of challenges, then sort them by ascending hacker_id.
+
+
+--Solution
+--HACKER_ID, NAME OUTPUT
+--CONDITION FULL SCORE FOR MORE THAN ONE CHALLENGE
+--ORDER DESC 'total no of chlng where hacker earned full score'
+--same score for multiple hacker order by name in asc
+with cte1 as
+(
+select s.hacker_id,s.challenge_id,s.score,
+        c.difficulty_level,
+        d.score as test
+    from submissions s
+join challenges c
+on s.challenge_id = c.challenge_id
+join difficulty d
+on c.difficulty_level = d.difficulty_level
+where s.score = d.score
+),
+cte2 as
+(
+select hacker_id,count(*) as cnt from cte1
+group by hacker_id
+having count(*) > 1
+)
+select c.hacker_id,h.name--,c.cnt
+from cte2 c
+join hackers h
+on c.hacker_id = h.hacker_id
+order by c.cnt desc , c.hacker_id asc--h.name asc
+;
